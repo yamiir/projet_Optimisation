@@ -25,7 +25,6 @@ function [fopt,xopt,gopt]=Gradient_F(Oracle,xini)
 // ----------------------------
 // Initialisation des variables
 // ----------------------------
-   
    logG = [];
    logP = [];
    Cout = [];
