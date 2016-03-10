@@ -1,4 +1,4 @@
-function [fopt,xopt,gopt]=Gradient_F(Oracle,xini)
+function [fopt,xopt,gopt]=Gradient_F(OraclePG,xini)
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,8 +43,8 @@ function [fopt,xopt,gopt]=Gradient_F(Oracle,xini)
 //    - valeur du critere et du gradient
 
       ind = 4;
-      [F,G] = Oracle(x,ind);
-
+      [F,G] = OraclePG(x,ind);
+        G
 //    - test de convergence
 
       if norm(G) <= tol then
