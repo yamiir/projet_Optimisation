@@ -1,88 +1,107 @@
 function [alphan,ok]=Wolfe(alpha,x,D,Oracle)
 
 
-//////////////////////////////////////////////////////////////
-//                                                          //
-//   RECHERCHE LINEAIRE SUIVANT LES CONDITIONS DE WOLFE     //
-//                                                          //
-//                                                          //
-//  Arguments en entree                                     //
-//  -------------------                                     //
-//    alpha  : valeur initiale du pas                       //
-//    x      : valeur initiale des variables                //
-//    D      : direction de descente                        //
-//    Oracle : nom de la fonction Oracle                    //
-//                                                          //
-//  Arguments en sortie                                     //
-//  -------------------                                     //
-//    alphan : valeur du pas apres recherche lineaire       //
-//    ok     : indicateur de reussite de la recherche       //
-//             = 1 : conditions de Wolfe verifiees          //
-//             = 2 : indistinguabilite des iteres           //
-//                                                          //
-//                                                          //
-//    omega1 : coefficient pour la 1-ere condition de Wolfe //
-//    omega2 : coefficient pour la 2-eme condition de Wolfe //
-//                                                          //
-//////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //   RECHERCHE LINEAIRE SUIVANT LES CONDITIONS DE WOLFE     //
+    //                                                          //
+    //                                                          //
+    //  Arguments en entree                                     //
+    //  -------------------                                     //
+    //    alpha  : valeur initiale du pas                       //
+    //    x      : valeur initiale des variables                //
+    //    D      : direction de descente                        //
+    //    Oracle : nom de la fonction Oracle                    //
+    //                                                          //
+    //  Arguments en sortie                                     //
+    //  -------------------                                     //
+    //    alphan : valeur du pas apres recherche lineaire       //
+    //    ok     : indicateur de reussite de la recherche       //
+    //             = 1 : conditions de Wolfe verifiees          //
+    //             = 2 : indistinguabilite des iteres           //
+    //                                                          //
+    //                                                          //
+    //    omega1 : coefficient pour la 1-ere condition de Wolfe //
+    //    omega2 : coefficient pour la 2-eme condition de Wolfe //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
 
 
-// -------------------------------------
-// Coefficients de la recherche lineaire
-// -------------------------------------
+    // -------------------------------------
+    // Coefficients de la recherche lineaire
+    // -------------------------------------
 
-   omega1 = 0.1;
-   omega2 = 0.9;
+    omega1 = 0.1;
+    omega2 = 0.9;
 
-   alphamin = 0.0;
-   alphamax = %inf;
+    alphamin = 0.0;
+    alphamax = %inf;
 
-   ok = 0;
-   dltx = 0.00000001;
+    ok = 0;
+    dltx = 0.00000001;
 
-// ---------------------------------
-// Algorithme de Fletcher-Lemarechal
-// ---------------------------------
+    // ---------------------------------
+    // Algorithme de Fletcher-Lemarechal
+    // ---------------------------------
 
-   // Appel de l'oracle au point initial
-   
-   ind = 4;
-   [F,G] = Oracle(x,ind);
+    // Appel de l'oracle au point initial
 
-   // Initialisation de l'algorithme
+    ind = 4;
+    [F,G] = Oracle(x,ind);
 
-   alphan = alpha;
-   xn     = x;
+    // Initialisation de l'algorithme
 
-   // Boucle de calcul du pas
-   //
-   // xn represente le point pour la valeur courante du pas,
-   // xp represente le point pour la valeur precedente du pas.
+    alphan = alpha;
+    xn     = x;
 
-   while ok == 0
-      
-      xp = xn;
-      xn = x + (alphan*D);
+    // Boucle de calcul du pas
+    //
+    // xn represente le point pour la valeur courante du pas,
+    // xp represente le point pour la valeur precedente du pas.
+    i=0;
+    while ok == 0
+        //printf('valeur de i=%d\n',i);
+        xp = xn;
+        xn = x + (alphan*D);
 
-      // Calcul des conditions de Wolfe
+        // Calcul des conditions de Wolfe
+        i=i+1;
+        if Oracle(xn,2)-Oracle(xp,2)>omega1*alphan*(Oracle(xp,3)'*D) then
+            alphamax=alphan;
+            alphan=1/2*(alphamin+alphamax);
 
-      // -----> A completer...
-      // -----> A completer...
+        else
+            if Oracle(xn,3)'*D<omega2*(Oracle(xp,3)'*D) then
+                alphamin=alphan;
+                if alphamax==%inf then
+                    alphan = 2*alphamin;
+                else
+                    alphan = 1/2*(alphamin+alphamax);
+                end
 
-      // Test de la valeur de alphan :
-      // - si les deux conditions de Wolfe sont verifiees,
-      //   faire ok = 1 : on sort alors de la boucle while
-      // - sinon, modifier la valeur de alphan : on reboucle.
+            else
+                ok=1;
+            end
+        end
 
-      // -----> A completer...
-      // -----> A completer...
+    end
 
-      // Test d'indistinguabilite
 
-      if norm(xn-xp) < dltx then
+
+    // Test de la valeur de alphan :
+    // - si les deux conditions de Wolfe sont verifiees,
+    //   faire ok = 1 : on sort alors de la boucle while
+    // - sinon, modifier la valeur de alphan : on reboucle.
+
+    // -----> A completer...
+    // -----> A completer...
+
+    // Test d'indistinguabilite
+
+    if norm(xn-xp) < dltx then
         ok = 2;
-      end
+    end
 
-   end
+
 
 endfunction

@@ -44,9 +44,9 @@ function [fopt,xopt,gopt]=Gradient_F(OraclePG,xini)
 
       ind = 4;
       [F,G] = OraclePG(x,ind);
-        G
+      
 //    - test de convergence
-
+    //printf('valeur de k=%d\n',k)
       if norm(G) <= tol then
          kstar = k;
          break
@@ -55,11 +55,11 @@ function [fopt,xopt,gopt]=Gradient_F(OraclePG,xini)
 //    - calcul de la direction de descente
 
       D = -G;
-
+    
 //    - calcul de la longueur du pas de gradient
 
-      alpha = alphai;
-
+      alpha = Wolfe(alphai,x,D,OraclePG);
+//Wolfe(alphai,x,D,OraclePG)
 //    - mise a jour des variables
 
       x = x + (alpha*D);
