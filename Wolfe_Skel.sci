@@ -60,18 +60,19 @@ function [alphan,ok]=Wolfe(alpha,x,D,Oracle)
     // xp represente le point pour la valeur precedente du pas.
     i=0;
     while ok == 0
-        printf('valeur de i=%d\n',i);
+        //printf('valeur de i=%d\n',i);
         xp = xn;
         xn = x + (alphan*D);
+        [Fn,Gn] = Oracle(xn,4);
 
         // Calcul des conditions de Wolfe
         i=i+1;
-        if Oracle(xn,2)-Oracle(xp,2)>omega1*alphan*(Oracle(xp,3)'*D) then
+        if Fn-F>omega1*alphan*(G'*D) then
             alphamax=alphan;
             alphan=1/2*(alphamin+alphamax);
 
         else
-            if Oracle(xn,3)'*D<omega2*(Oracle(xp,3)'*D) then
+            if Gn'*D<omega2*(G'*D) then
                 alphamin=alphan;
                 if alphamax==%inf then
                     alphan = 2*alphamin;
@@ -83,6 +84,10 @@ function [alphan,ok]=Wolfe(alpha,x,D,Oracle)
                 ok=1;
             end
         end
+
+    if norm(xn-xp) < dltx then
+        ok = 2;
+    end
 
     end
 
@@ -97,10 +102,6 @@ function [alphan,ok]=Wolfe(alpha,x,D,Oracle)
     // -----> A completer...
 
     // Test d'indistinguabilite
-
-    if norm(xn-xp) < dltx then
-        ok = 2;
-    end
 
 
 

@@ -19,7 +19,7 @@ function [fopt,xopt,gopt]=Gradient_F(OraclePG,xini)
              "Valeur du pas de gradient";...
              "Seuil de convergence sur ||G||"];
    typ = list("vec",1,"vec",1,"vec",1);
-   default = ["5000";"0.0005";"0.000001"];
+   default = ["500";"1";"0.000001"];
    [ok,iter,alphai,tol] = getvalue(titre,labels,typ,default);
 
 // ----------------------------
@@ -46,7 +46,7 @@ function [fopt,xopt,gopt]=Gradient_F(OraclePG,xini)
       [F,G] = OraclePG(x,ind);
       
 //    - test de convergence
-    printf('valeur de k=%d\n',k)
+    //printf('valeur de k=%d\n',k)
       if norm(G) <= tol then
          kstar = k;
          break
