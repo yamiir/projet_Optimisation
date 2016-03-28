@@ -1,42 +1,48 @@
-function [fopt,xopt,gopt]=Gradient_Conjuge(OraclePG,xini)
-    alphai=0.001
+function [fopt,xopt,gopt]=BFGS(OraclePG,xini)
     x0=xini
-    [F0,G0]=OraclePG(x0,3)
-    d0=-G0
-    alpha=Wolfe(alphai,x0,d0,OraclePG)
+    [F0,G0,H0]=OraclePG(xini,7)
+    W0=inv(H0)
+    d0=-W0*G0
+    alphai=1
+    alpha=Wolfe(alphai,xini,d0,OraclePG)
     x1=x0+alpha*d0
-    dk0=d0
-    tol=0.00001
     iter=5000
+    tol=0.00001
     logG=[]
     logP=[]
     Cout=[]
     for k=1:iter
-        
         [F1,G1]=OraclePG(x1,3)
-        Beta=(G1-G0)'*G1/(norm(G0)^2)
-        dk1=-G1+Beta*dk0
         
-        if norm(G1) <= tol then
+        if norm(G1)<tol then
             break
         end
-        alpha=Wolfe(alphai,x1,dk1,OraclePG)
+        
+        thetaU=x1-x0
+        thetaG=G1-G0;
+        //disp('G1=',thetaG)
+        Dim=size(thetaU);
+        I=eye(Dim(1),Dim(1));
+        W1=(I-(thetaU*thetaG')/(thetaG'*thetaU))*W0*(I-(thetaG*thetaU')/(thetaG'*thetaU))...
+        +(thetaU*thetaU')/(thetaG'*thetaG);
+        d1=-W1*G1;
+        alpha=Wolfe(alphai,x1,d1,OraclePG);
         //disp('alpha=',alpha)
-        x2=x1+alpha*dk1
-        x1=x2
-        x0=x1
-        dk0=dk1
-        F0=F1
-        G0=G1  
-        //disp('G1=',G1)
+        x2=x1+alpha*d1;
+
+        F0=F1;
+        G0=G1;
+        x0=x1;
+        x1=x2;
+        W0=W1;
       logG = [ logG ; log10(norm(G1)) ];
       logP = [ logP ; log10(alpha) ];
       Cout = [ Cout ; F1 ];
     end
     fopt=F1
-    xopt=x2
     gopt=G1
-   tcpu = timer();
+    xopt=x2
+       tcpu = timer();
 
    cvge = ['Iteration         : ' string(k);...
            'Temps CPU         : ' string(tcpu);...
@@ -47,5 +53,4 @@ function [fopt,xopt,gopt]=Gradient_Conjuge(OraclePG,xini)
    // - visualisation de la convergence
 
    Visualg(logG,logP,Cout);
-
 endfunction
