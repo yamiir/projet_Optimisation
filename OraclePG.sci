@@ -1,6 +1,10 @@
 function [F,G,H]=OraclePG(qc,ind)
     q=q0+B*qc;
+    F=0;
+    G=0;
+    H=0;
     select ind
+        
     case 2 then
         F=1/3*sum(q.*r.*q.*abs(q))+pr'*(Ar*q);
         //F=1/3 * (q' * r.*q.*abs(q)) + pr' * (Ar*q);
