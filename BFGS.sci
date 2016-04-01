@@ -1,78 +1,57 @@
 function [fopt,xopt,gopt]=BFGS(OraclePG,xini)
-    titre = "Parametres du gradient a pas fixe";
-    labels = ["Nombre maximal d''iterations";...
-    "Valeur du pas de gradient";...
-    "Seuil de convergence sur ||G||"];
-    typ = list("vec",1,"vec",1,"vec",1);
-    default = ["500";"1";"0.000001"];
-    [ok,iter,alphai,tol] = getvalue(titre,labels,typ,default);
 
-    // ----------------------------
-    // Initialisation des variables
-    // ----------------------------
-    logG = [];
-    logP = [];
-    Cout = [];
-
-    timer();
-
-    // -------------------------
-    // Boucle sur les iterations
-    // -------------------------
-
-    dim = length(xini);
-    x = xini;
-    delta_u=0;
-    delta_G=0;
-    H = OraclePG(xini,5);
-    disp(H);
-    Wk=inv(H);
-    kstar = iter;
-    for k = 1:iter
-        [Fn,Gn] = OraclePG(x,4);
-        if norm(Gn) <= tol then
-            kstar = k;
+    x0=xini
+    [F0,G0,H0]=OraclePG(xini,7)
+    W0=inv(H0)
+    d0=-W0*G0
+    alphai=1
+    alpha=Wolfe(alphai,xini,d0,OraclePG)
+    x1=x0+alpha*d0
+    iter=5000
+    tol=0.00001
+    logG=[]
+    logP=[]
+    Cout=[]
+    for k=1:iter
+        [F1,G1]=OraclePG(x1,3)
+        
+        if norm(G1)<tol then
             break
         end
-        Dk=-Wk*Gn;
-        alpha = Wolfe(alphai,x,Dk,OraclePG);
-        delta_u = alpha * Dk;
-        x=x+delta_u;
-        [Fn_1,Gn_1] = OraclePG(x,4);
-        delta_G = Gn_1 - Gn;
+        
+        thetaU=x1-x0
+        thetaG=G1-G0;
+        //disp('G1=',thetaG)
+        Dim=size(thetaU);
+        I=eye(Dim(1),Dim(1));
+        W1=(I-(thetaU*thetaG')/(thetaG'*thetaU))*W0*(I-(thetaG*thetaU')/(thetaG'*thetaU))...
+        +(thetaU*thetaU')/(thetaG'*thetaG);
+        d1=-W1*G1;
+        alpha=Wolfe(alphai,x1,d1,OraclePG);
+        //disp('alpha=',alpha)
+        x2=x1+alpha*d1;
 
-        uG = delta_u * delta_G';
-        denom = delta_G'*delta_u;
-        Wk_1=(eye(dim,dim)-uG/denom) * Wk * (eye(dim,dim) - uG'/denom) + delta_u*delta_u' / denom;
-
-        Wk=Wk_1;    
-        logG = [ logG ; log10(norm(G)) ];
-        logP = [ logP ; log10(alpha) ];
-        Cout = [ Cout ; F ];
+        F0=F1;
+        G0=G1;
+        x0=x1;
+        x1=x2;
+        W0=W1;
+      logG = [ logG ; log10(norm(G1)) ];
+      logP = [ logP ; log10(alpha) ];
+      Cout = [ Cout ; F1 ];
     end
+    fopt=F1
+    gopt=G1
+    xopt=x2
+       tcpu = timer();
 
+   cvge = ['Iteration         : ' string(k);...
+           'Temps CPU         : ' string(tcpu);...
+           'Critere optimal   : ' string(fopt);...
+           'Norme du gradient : ' string(norm(gopt))];
+   disp('Fin de la methode de gradient a pas fixe')
+   disp(cvge)
+   // - visualisation de la convergence
 
-    // ---------------------------
-    // Resultats de l'optimisation
-    // ---------------------------
-
-    fopt = F;
-    xopt = x;
-    gopt = G;
-
-    tcpu = timer();
-
-    cvge = ['Iteration         : ' string(kstar);...
-    'Temps CPU         : ' string(tcpu);...
-    'Critere optimal   : ' string(fopt);...
-    'Norme du gradient : ' string(norm(gopt))];
-    disp('Fin de la methode de gradient a pas fixe')
-    disp(cvge)
-
-    // - visualisation de la convergence
-
-    Visualg(logG,logP,Cout);
-
-
-
+   Visualg(logG,logP,Cout);
 endfunction
