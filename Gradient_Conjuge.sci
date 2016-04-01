@@ -1,5 +1,5 @@
 function [fopt,xopt,gopt]=Gradient_Conjuge(OraclePG,xini)
-    alphai=0.001
+    alphai=0.99
     x0=xini
     [F0,G0]=OraclePG(x0,3)
     d0=-G0

@@ -24,7 +24,7 @@ function [fopt,xopt,gopt]=BFGS(OraclePG,xini)
         Dim=size(thetaU);
         I=eye(Dim(1),Dim(1));
         W1=(I-(thetaU*thetaG')/(thetaG'*thetaU))*W0*(I-(thetaG*thetaU')/(thetaG'*thetaU))...
-        +(thetaU*thetaU')/(thetaG'*thetaG);
+        +(thetaU*thetaU')/(thetaG'*thetaU);
         d1=-W1*G1;
         alpha=Wolfe(alphai,x1,d1,OraclePG);
         //disp('alpha=',alpha)
