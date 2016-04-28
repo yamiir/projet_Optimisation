@@ -67,6 +67,7 @@ function [alphan,ok]=Wolfe(alpha,x,D,Oracle)
 
         // Calcul des conditions de Wolfe
         i=i+1;
+        
         if Fn-F>omega1*alphan*(G'*D) then
             alphamax=alphan;
             alphan=1/2*(alphamin+alphamax);

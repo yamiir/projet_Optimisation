@@ -43,7 +43,7 @@ exec('Gradient_F.sci');
 exec('Wolfe_Skel.sci');
 exec('Gradient_Conjuge.sci');
 exec('BFGS.sci');
-//exec('OracleDG.sci')
+exec('OracleDG.sci')
 exec('get_Q.sci')
 exec('Newton.sci');
 titrgr = "Fonction optim de Scilab sur le probleme primal";
@@ -58,15 +58,19 @@ titrgr = "Fonction optim de Scilab sur le probleme primal";
 
 // La dimension (n-md) est celle du probleme primal
 
-xini = 0.1 * rand(n-md,1);
+//xini = 0.1 * rand(n-md,1);
 
+// La dimension (md) est celle du probleme dual
+
+xini = 0.1 * rand(md,1);
 // ----------------------------
 // Minimisation proprement dite
 // ----------------------------
 
 // Exemple : la fonction "optim" de Scilab
 //
-[fopt,xopt,gopt] = Gradient_Conjuge(OraclePG,xini);
+[fopt,xopt,gopt] = Gradient_F(OracleDG,xini);
+//[fopt,xopt,gopt] = Gradient_Conjuge(OracleDG,xini);
 //[fopt,xopt,gopt] = Newton(OraclePG,xini);
 //[fopt,xopt,gopt] = BFGS(OraclePG,xini);
 
@@ -76,8 +80,9 @@ xini = 0.1 * rand(n-md,1);
 // Verification des resultats
 // --------------------------
 
-[q,z,f,p] = HydrauliqueP(xopt);
-//[q,z,f,p] = HydrauliqueD(xopt);
+//[q,z,f,p] = HydrauliqueP(xopt);
+
+[q,z,f,p] = HydrauliqueD(xopt);
 Verification(q,z,f,p);
 
 //
