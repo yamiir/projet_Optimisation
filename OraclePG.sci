@@ -13,7 +13,7 @@ function [F,G,H]=OraclePG(qc,ind)
     case 4 then
         F=1/3*sum(q.*r.*q.*abs(q))+pr'*(Ar*q);
         G=(B'*(r.*q.*abs(q)))+(Ar*B)'*pr;
-        //+2/3*(B'*((sign(q)).*r.*q.*q))...
+        //+2/3*(B'*((sign(q)).*r.*q.*q
     case 5 then
         H=2*(B'*(diag(sign(q).*r.*q))*B);
         // +4/3*(B'*(sign(q).*r.*q)';
