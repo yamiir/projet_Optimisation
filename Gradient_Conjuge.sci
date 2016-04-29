@@ -16,7 +16,7 @@ function [fopt,xopt,gopt]=Gradient_Conjuge(OraclePG,xini)
         [F1,G1]=OraclePG(x1,3)
         Beta=(G1-G0)'*G1/(norm(G0)^2)
         dk1=-G1+Beta*dk0
-
+        //disp("G1=",G1)
         if norm(G1) <= tol then
             break
         end

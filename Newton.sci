@@ -12,7 +12,7 @@ function [fopt,xopt,gopt]=Newton(OraclePG,xini)
             break;
         end
 
-        d=-inv(H0)*G0;
+        d=-H0\G0;
         alpha=Wolfe(alphai,x0,d,OraclePG);
         x1=x0+alpha*d;
         logG = [ logG ; log10(norm(G0)) ];

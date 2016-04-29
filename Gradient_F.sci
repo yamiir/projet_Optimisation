@@ -47,6 +47,7 @@ function [fopt,xopt,gopt]=Gradient_F(OraclePG,xini)
       
 //    - test de convergence
     //printf('valeur de k=%d\n',k)
+      //disp("G=",G)
       if norm(G) <= tol then
          kstar = k;
          break
@@ -59,6 +60,7 @@ function [fopt,xopt,gopt]=Gradient_F(OraclePG,xini)
 //    - calcul de la longueur du pas de gradient
 
       alpha = Wolfe(alphai,x,D,OraclePG);
+      //disp("alpha=",alpha)
 //Wolfe(alphai,x,D,OraclePG)
 //    - mise a jour des variables
 
@@ -81,6 +83,7 @@ function [fopt,xopt,gopt]=Gradient_F(OraclePG,xini)
    gopt = G;
 
    tcpu = timer();
+    disp("gopt=",fopt)
 
    cvge = ['Iteration         : ' string(kstar);...
            'Temps CPU         : ' string(tcpu);...
